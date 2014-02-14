@@ -1,171 +1,73 @@
-Symfony Standard Edition
-========================
+**This is Marketplace**.  Requirements as yet to be determined.  
 
-Welcome to the Symfony Standard Edition - a fully-functional Symfony2
-application that you can use as the skeleton for your new applications.
+This is a Symfony-based project which includes a VagrantFile for easily getting
+a local development environment going.
 
-This document contains information on how to download, install, and start
-using Symfony. For a more detailed explanation, see the [Installation][1]
-chapter of the Symfony Documentation.
+# Setup
 
-1) Installing the Standard Edition
-----------------------------------
+## Checking out code
 
-When it comes to installing the Symfony Standard Edition, you have the
-following options.
+Checkout this project wherever you would like.  This project does contain 
+Git Submodules, so you will want to use the `--recursive` option when checking
+it out.
 
-### Use Composer (*recommended*)
+## Building Dev Environment
 
-As Symfony uses [Composer][2] to manage its dependencies, the recommended way
-to create a new project is to use it.
+You will need to have [VirtualBox](https://www.virtualbox.org/) and [Vagrant](http://vagrantup.com) 
+installed on your machine before continuing.  The latest versions will work fine.
 
-If you don't have Composer yet, download it following the instructions on
-http://getcomposer.org/ or just run the following command:
+Once installed, you need to create vagrant VM.  In a shell:
 
-    curl -s http://getcomposer.org/installer | php
+```
+$ cd vagrant
+$ vagrant up
+```
 
-Then, use the `create-project` command to generate a new Symfony application:
+This will build your environment.  This VagrantFile only contains a single server
+at the moment, which is named `marketplace_web`.  It uses local IP 192.168.33.20.
 
-    php composer.phar create-project symfony/framework-standard-edition path/to/install
+## Editing hosts file
 
-Composer will install Symfony and all its dependencies under the
-`path/to/install` directory.
+You need to add an entry into the hosts file on the host machine.  For *nix based 
+operating systems, this is `/etc/hosts`.  For Windows, it is at `c:\Windows\System32\drivers\etc`
 
-### Download an Archive File
+Add the following entry:
 
-To quickly test Symfony, you can also download an [archive][3] of the Standard
-Edition and unpack it somewhere under your web server root directory.
+```
+192.168.33.20  dev.sgmarketplace.com
+```
 
-If you downloaded an archive "without vendors", you also need to install all
-the necessary dependencies. Download composer (see above) and run the
-following command:
+## Accessing Marketplace
+From now you should be able to access Marketplace at 
+[http://dev.sgmarketplace.com/](http://dev.sgmarketplace.com/). 
 
-    php composer.phar install
+## Running Composer
+You will need to SSH to the new machine you just built.  
 
-2) Checking your System Configuration
--------------------------------------
+```
+$ vagrant ssh marketplace_web
+```
 
-Before starting coding, make sure that your local system is properly
-configured for Symfony.
+On the machine, your project is located at `/usr/share/nginx/www/sites/sgmarketplace.com`.  On your
+machine:
 
-Execute the `check.php` script from the command line:
+```
+$ cd /usr/share/nginx/www/sites/sgmarketplace.com
+$ composer install
+```
 
-    php app/check.php
+Composer will download all the packages and require you to setup some configuration
+options.  Once you setup these options, you can access [http://dev.sgmarketplace.com](http://dev.sgmarketplace.com).
 
-The script returns a status code of `0` if all mandatory requirements are met,
-`1` otherwise.
+### Default MySQL Options
+* Driver: pdo_mysql
+* Host: 127.0.0.1
+* Port: 3306
+* User: root
+* Password: [empty]
+* DB Name: Marketplace
 
-Access the `config.php` script from a browser:
+### Default Mailer Options
+Use all the default options
 
-    http://localhost/path/to/symfony/app/web/config.php
 
-If you get any warnings or recommendations, fix them before moving on.
-
-3) Browsing the Demo Application
---------------------------------
-
-Congratulations! You're now ready to use Symfony.
-
-From the `config.php` page, click the "Bypass configuration and go to the
-Welcome page" link to load up your first Symfony page.
-
-You can also use a web-based configurator by clicking on the "Configure your
-Symfony Application online" link of the `config.php` page.
-
-To see a real-live Symfony page in action, access the following page:
-
-    web/app_dev.php/demo/hello/Fabien
-
-4) Getting started with Symfony
--------------------------------
-
-This distribution is meant to be the starting point for your Symfony
-applications, but it also contains some sample code that you can learn from
-and play with.
-
-A great way to start learning Symfony is via the [Quick Tour][4], which will
-take you through all the basic features of Symfony2.
-
-Once you're feeling good, you can move onto reading the official
-[Symfony2 book][5].
-
-A default bundle, `AcmeDemoBundle`, shows you Symfony2 in action. After
-playing with it, you can remove it by following these steps:
-
-  * delete the `src/Acme` directory;
-
-  * remove the routing entry referencing AcmeDemoBundle in `app/config/routing_dev.yml`;
-
-  * remove the AcmeDemoBundle from the registered bundles in `app/AppKernel.php`;
-
-  * remove the `web/bundles/acmedemo` directory;
-
-  * remove the `security.providers`, `security.firewalls.login` and
-    `security.firewalls.secured_area` entries in the `security.yml` file or
-    tweak the security configuration to fit your needs.
-
-What's inside?
----------------
-
-The Symfony Standard Edition is configured with the following defaults:
-
-  * Twig is the only configured template engine;
-
-  * Doctrine ORM/DBAL is configured;
-
-  * Swiftmailer is configured;
-
-  * Annotations for everything are enabled.
-
-It comes pre-configured with the following bundles:
-
-  * **FrameworkBundle** - The core Symfony framework bundle
-
-  * [**SensioFrameworkExtraBundle**][6] - Adds several enhancements, including
-    template and routing annotation capability
-
-  * [**DoctrineBundle**][7] - Adds support for the Doctrine ORM
-
-  * [**TwigBundle**][8] - Adds support for the Twig templating engine
-
-  * [**SecurityBundle**][9] - Adds security by integrating Symfony's security
-    component
-
-  * [**SwiftmailerBundle**][10] - Adds support for Swiftmailer, a library for
-    sending emails
-
-  * [**MonologBundle**][11] - Adds support for Monolog, a logging library
-
-  * [**AsseticBundle**][12] - Adds support for Assetic, an asset processing
-    library
-
-  * **WebProfilerBundle** (in dev/test env) - Adds profiling functionality and
-    the web debug toolbar
-
-  * **SensioDistributionBundle** (in dev/test env) - Adds functionality for
-    configuring and working with Symfony distributions
-
-  * [**SensioGeneratorBundle**][13] (in dev/test env) - Adds code generation
-    capabilities
-
-  * **AcmeDemoBundle** (in dev/test env) - A demo bundle with some example
-    code
-
-All libraries and bundles included in the Symfony Standard Edition are
-released under the MIT or BSD license.
-
-Enjoy!
-
-[1]:  http://symfony.com/doc/2.4/book/installation.html
-[2]:  http://getcomposer.org/
-[3]:  http://symfony.com/download
-[4]:  http://symfony.com/doc/2.4/quick_tour/the_big_picture.html
-[5]:  http://symfony.com/doc/2.4/index.html
-[6]:  http://symfony.com/doc/2.4/bundles/SensioFrameworkExtraBundle/index.html
-[7]:  http://symfony.com/doc/2.4/book/doctrine.html
-[8]:  http://symfony.com/doc/2.4/book/templating.html
-[9]:  http://symfony.com/doc/2.4/book/security.html
-[10]: http://symfony.com/doc/2.4/cookbook/email.html
-[11]: http://symfony.com/doc/2.4/cookbook/logging/monolog.html
-[12]: http://symfony.com/doc/2.4/cookbook/assetic/asset_management.html
-[13]: http://symfony.com/doc/2.4/bundles/SensioGeneratorBundle/index.html

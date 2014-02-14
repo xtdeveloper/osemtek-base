@@ -1,0 +1,286 @@
+group { 'puppet': ensure => present }
+Exec { path => [ '/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/' ] }
+
+exec { "apt-get initial update":
+    command => 'apt-get update'
+}
+
+$default_packages = [ "strace", "sysstat", "git", "subversion" ]
+package { $default_packages :
+    ensure => "latest"
+}
+
+# Adds URIs to local etc/hosts
+host { 'dev.sgmarketplace.com':
+    ip => '127.0.0.1',
+}
+
+package {
+    [
+      "nginx-full"
+    ]: ensure => installed,
+}
+
+service {
+    "nginx":
+      enable     => true,
+      ensure     => running,
+      hasrestart => true,
+      subscribe  => [Package["nginx-full"]],
+}
+
+exec {
+    "service nginx restart":
+      command      => "service nginx restart",
+      refreshonly  => true,
+}
+
+file {
+    "/usr/share/nginx/www/sites":
+      ensure => "directory",
+      recurse => true
+}
+
+file {
+    [        
+      "/etc/nginx/conf.d"
+    ]: 
+    ensure => "directory", 
+      require => [Package["nginx-full"]],
+    recurse => true
+}
+
+file { "/etc/nginx/sites-enabled" :
+      ensure => "directory",
+      recurse => true,
+      require => [Package["nginx-full"]],
+      notify => Service["nginx"],
+}
+
+file { "/etc/nginx/nginx.conf":
+      source => "puppet:///modules/nginx-web/etc/nginx/nginx.conf",
+      owner  => "root",
+      group  => "root",
+      mode   => 644,
+      require => [Package["nginx-full"]]
+}
+
+file { "/etc/nginx/sites-available/default":
+      source => "puppet:///modules/nginx-web/etc/nginx/sites-available/default",
+      owner  => "root",
+      group  => "root",
+      mode   => 644,
+      require => [Package["nginx-full"]]
+}
+
+package { 'apache2':
+    ensure => present,
+}
+
+service { 'apache2':
+    ensure  => stopped,
+    enable  => false,
+    require => Package['apache2']
+}->
+
+package { "php5-fpm" :
+    ensure => "latest",
+    notify => [Service['nginx']],
+    require => [Package['nginx-full']]
+}
+
+file { '/var/log/nginx':
+    ensure => directory,
+    recurse => true
+}->
+file { '/var/log/nginx/sgmarketplace.com':
+    ensure => directory,
+    recurse => true
+}->
+file { '/var/log/nginx/sgmarketplace.com/access.log':
+    ensure => present,
+    require => Package['nginx-full'],
+    recurse => true
+}->
+file { '/var/log/nginx/sgmarketplace.com/error.log':
+    ensure => present,
+    require => Package['nginx-full'],
+    notify => Service['nginx'],
+    recurse => true
+}
+
+class {'apt':
+  always_apt_update => true,
+}
+
+Class['::apt::update'] -> Package <|
+    title != 'python-software-properties'
+and title != 'software-properties-common'
+|>
+
+    apt::key { '4F4EA0AAE5267A6C': }
+
+apt::ppa { 'ppa:ondrej/php5-oldstable':
+  require => Apt::Key['4F4EA0AAE5267A6C']
+}
+
+package { [
+    'build-essential',
+    'vim',
+    'curl',
+    'git-core',
+    'mc'
+  ]:
+  ensure  => 'installed',
+}
+
+#add repo from ServerGrove that has some php5.4 modules and things
+file { '/etc/apt/sources.list.d/servergrove.list':
+    ensure => present,
+    content => "deb http://repos.servergrove.com/servergrove-ubuntu-precise precise main",
+}->
+
+exec { 'download servergrove public key':
+    command => 'curl -O http://repos.servergrove.com/servergrove-ubuntu-precise/servergrove-ubuntu-precise.gpg.key',
+}->
+exec { 'add servergrove public key':
+    command => 'apt-key add servergrove-ubuntu-precise.gpg.key',
+}->
+
+exec { 'add-apt-repository ppa:ondrej/php5-oldstable':
+    command => 'add-apt-repository ppa:ondrej/php5-oldstable',
+}->
+
+exec { 'apt-get update':
+    command => 'apt-get update',
+}->
+
+package { "php-pear":
+    ensure => "installed"
+}->
+exec { "configure pear auto_discover":
+    command => 'pear config-set auto_discover 1',
+}->
+exec { "upgrade pear":
+    command => 'pear upgrade pear',
+}
+
+package { "php5-mysql" :
+    ensure => "latest",
+    notify => Service["nginx"],
+    require => [Package['php5-fpm']]
+}
+
+package { "php5-cli" :
+    ensure => "latest",
+    notify => Service["nginx"],
+    require => [Package['php5-fpm']]
+}
+
+package { "php5-curl" :
+    ensure => "latest",
+    notify => Service["nginx"],
+    require => [Package['php5-fpm']]
+}
+
+package { "php5-intl" :
+    ensure => "latest",
+    notify => Service["nginx"],
+    require => [Package['php5-fpm']]
+}
+
+package { "php5-mcrypt" :
+    ensure => "latest",
+    notify => Service["nginx"],
+    require => [Package['php5-fpm']]
+}
+
+package { "php5-gd" :
+    ensure => "latest",
+    notify => Service["nginx"],
+    require => [Package['php5-fpm']]
+}
+
+package { "php-apc" :
+    ensure => "latest",
+    notify => Service["nginx"],
+    require => [Package['php5-fpm']]
+}
+
+package { "php5-dev" :
+    ensure => "latest",
+    notify => Service["nginx"],
+    require => [Package['php5-fpm']]
+}
+
+package { "php5-xdebug" :
+    ensure => "latest",
+    notify => Service["nginx"],
+    require => [Package['php5-fpm']]
+}
+
+$web_packages = [ "gcc", "make", "memcached" ]
+package { $web_packages :
+    ensure => "latest",
+}
+
+class { 'composer':
+    command_name => 'composer',
+    target_dir   => '/usr/local/bin',
+    auto_update => true,
+    require => Package['php5-fpm', 'curl'],
+}
+
+# Install bitbucket deployment key
+file { "/home/vagrant/.ssh/id_rsa":
+    source => "puppet:///commonfiles/sgdeploykey/id_rsa",
+    owner  => "vagrant",
+    mode   => 600
+}->
+file { "/home/vagrant/.ssh/id_rsa.pub":
+    source => "puppet:///commonfiles/sgdeploykey/id_rsa.pub",
+    owner  => "vagrant",
+    mode   => 600
+}->
+file { "/home/vagrant/.ssh/known_hosts":
+    source => "puppet:///commonfiles/known_hosts",
+    owner  => "vagrant",
+    mode   => 644
+}->
+exec { 'install-bitbucket-cert':
+    command => '/bin/sh -c \'eval "$(ssh-agent)"; su vagrant; ssh-add /home/vagrant/.ssh/id_rsa\''
+    #command => 'ssh-add /home/vagrant/.ssh/id_rsa'
+}
+
+class { "mysql":
+    root_password => '',
+}->
+
+# Create Oreo Database
+mysql::grant { 'create-marketplace-database':
+    mysql_db         => 'marketplace',
+    mysql_user       => 'root',
+    mysql_password   => '',
+    mysql_privileges => 'ALL',
+    mysql_host       => '%'
+}->    
+mysql::grant { 'create-marketplace-test-database':
+    mysql_db         => 'marketplace-test',
+    mysql_user       => 'root',
+    mysql_password   => '',
+    mysql_privileges => 'ALL',
+    mysql_host       => '%',
+}->    
+mysql::grant { 'create-marketplace-dev-database':
+    mysql_db         => 'marketplace-dev',
+    mysql_user       => 'root',
+    mysql_password   => '',
+    mysql_privileges => 'ALL',
+    mysql_host       => '%',
+}
+
+
+mysql::augeas {
+   'mysqld/bind-address':
+      value  => '0.0.0.0';
+}
