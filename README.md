@@ -11,6 +11,9 @@ Checkout this project wherever you would like.  This project does contain
 Git Submodules, so you will want to use the `--recursive` option when checking
 it out.
 
+If you forgot to check it out recursively, don't fret. We can fix it.  Just do
+a `git submodule update --init` and it'll download and initialize the submodules.
+
 ## Building Dev Environment
 
 You will need to have [VirtualBox](https://www.virtualbox.org/) and [Vagrant](http://vagrantup.com) 
