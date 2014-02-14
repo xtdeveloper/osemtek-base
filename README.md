@@ -68,7 +68,7 @@ options.  Once you setup these options, you can access [http://dev.sgmarketplace
 * Port: 3306
 * User: root
 * Password: [empty]
-* DB Name: Marketplace
+* DB Name: marketplace
 
 ### Default Mailer Options
 Use all the default options
