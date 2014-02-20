@@ -1,6 +1,6 @@
 **This is Marketplace**.  Requirements as yet to be determined.  
 
-This is a Symfony-based project which includes a VagrantFile for easily getting
+This is a Symfony2-based project which includes a VagrantFile for easily getting
 a local development environment going.
 
 # Setup
