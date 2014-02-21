@@ -27,6 +27,7 @@ $ vagrant plugin install vagrant-vbguest
 ```
 
 **Additional plugin if you are using Windows**
+
 You should install the vagrant-winnfsd plugin for Vagrant. This can be done using the following command:
 ```
 $ vagrant plugin install vagrant-winnfsd
