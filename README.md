@@ -1,5 +1,3 @@
-**This is Marketplace**.  Requirements as yet to be determined.  
-
 This is a Symfony2-based project which includes a VagrantFile for easily getting
 a local development environment going.
 
@@ -26,7 +24,7 @@ To keep the VirtualBox Guest Additions package up to date you should install the
 $ vagrant plugin install vagrant-vbguest
 ```
 
-**Additional plugin if you are using Windows**
+### Additional plugin if you are using Windows
 
 You should install the vagrant-winnfsd plugin for Vagrant. This can be done using the following command:
 ```
