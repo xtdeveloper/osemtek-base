@@ -19,14 +19,29 @@ a `git submodule update --init` and it'll download and initialize the submodules
 You will need to have [VirtualBox](https://www.virtualbox.org/) and [Vagrant](http://vagrantup.com) 
 installed on your machine before continuing.  The latest versions will work fine.
 
-Once installed, you need to create vagrant VM.  In a shell:
+### Install the Vagrant plugin(s)
+
+To keep the VirtualBox Guest Additions package up to date you should install the vagrant-vbguest plugin. This can be done using the following command:
+```
+$ vagrant plugin install vagrant-vbguest
+```
+
+**Additional plugin if you are using Windows**
+You should install the vagrant-winnfsd plugin for Vagrant. This can be done using the following command:
+```
+$ vagrant plugin install vagrant-winnfsd
+```
+
+## Launch the VM
+
+Once Vagrant and VirtualBox are installed, you need to create vagrant VM.  In a shell:
 
 ```
 $ cd vagrant
 $ vagrant up
 ```
 
-This will build your environment.  This VagrantFile only contains a single server
+This will build your environment. It will take several minutes. This VagrantFile only contains a single server
 at the moment, which is named `marketplace_web`.  It uses local IP 192.168.33.20.
 
 ## Editing hosts file
@@ -52,7 +67,7 @@ $ vagrant ssh marketplace_web
 ```
 
 On the machine, your project is located at `/usr/share/nginx/www/sites/sgmarketplace.com`.  On your
-machine:
+VM:
 
 ```
 $ cd /usr/share/nginx/www/sites/sgmarketplace.com
