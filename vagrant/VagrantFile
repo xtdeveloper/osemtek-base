@@ -14,9 +14,9 @@ Vagrant.configure("2") do |config|
 
     #nfs_setting = RUBY_PLATFORM =~ /darwin/ || RUBY_PLATFORM =~ /linux/
 
-    if (RUBY_PLATFORM =~ /darwin/ || RUBY_PLATFORM =~ /linux/) != nil       
+    #if (RUBY_PLATFORM =~ /darwin/ || RUBY_PLATFORM =~ /linux/) != nil       
         config.vm.synced_folder "./../", "/usr/share/nginx/www/sites/sgmarketplace.com", type: "nfs"
-    end
+    #end
 
     
 
