@@ -12,8 +12,13 @@ Vagrant.configure("2") do |config|
 
     web_config.vm.network :private_network, ip: "192.168.33.20"
 
-    nfs_setting = RUBY_PLATFORM =~ /darwin/ || RUBY_PLATFORM =~ /linux/
-    config.vm.synced_folder "./../", "/usr/share/nginx/www/sites/sgmarketplace.com", id: "vagrant-root" , :nfs => nfs_setting
+    #nfs_setting = RUBY_PLATFORM =~ /darwin/ || RUBY_PLATFORM =~ /linux/
+
+    if (RUBY_PLATFORM =~ /darwin/ || RUBY_PLATFORM =~ /linux/) != nil       
+        config.vm.synced_folder "./../", "/usr/share/nginx/www/sites/sgmarketplace.com", type: "nfs"
+    end
+
+    
 
     web_config.vm.provision :puppet do |puppet|
       puppet.manifests_path = "manifests"
