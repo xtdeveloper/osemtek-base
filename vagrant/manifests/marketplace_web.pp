@@ -219,6 +219,23 @@ package { "php5-xdebug" :
     require => [Package['php5-fpm']]
 }
 
+exec { 'setup-xdebug-config':
+    command => 'cat <<EOF >> /etc/php5/conf.d/20-xdebug.ini
+                xdebug.remote_enable = 1
+                xdebug.remote_connect_back = 1
+                xdebug.remote_host=192.168.33.20
+                xdebug.idekey = "vagrant"
+                xdebug.remote_autostart = 0
+                xdebug.remote_port = 9000
+                xdebug.remote_handler=dbgp
+                xdebug.remote_log="/tmp/xdebug.log"
+                xdebug.profiler_enable=true
+                xdebug.profiler_output_dir="/tmp"',
+    require => [Package['php5-xdebug']],
+    notify => Service['nginx']
+}
+
+
 $web_packages = [ "gcc", "make", "memcached" ]
 package { $web_packages :
     ensure => "latest",
