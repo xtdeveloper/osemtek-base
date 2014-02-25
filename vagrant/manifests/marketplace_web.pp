@@ -229,7 +229,7 @@ exec { 'setup-xdebug-config':
                 xdebug.remote_port = 9000
                 xdebug.remote_handler=dbgp
                 xdebug.remote_log="/tmp/xdebug.log"
-                xdebug.profiler_enable=true
+                xdebug.profiler_enable=false
                 xdebug.profiler_output_dir="/tmp"',
     require => [Package['php5-xdebug']],
     notify => Service['nginx']
