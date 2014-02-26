@@ -9,5 +9,7 @@
 /vendor/
 /bin/
 /composer.phar
+/composer.lock
 /nbproject/
 /nbproject/private/
+.DS_Store
