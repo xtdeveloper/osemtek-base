@@ -73,6 +73,8 @@ $ cd /usr/share/nginx/www/sites/sgmarketplace.com
 $ composer install
 ```
 
+_You may be asked for your **github** username and password during composer installation.  Please supply them (this is a github limit to prevent spamming clone)._
+
 Composer will download all the packages and require you to setup some configuration
 options.  Once you setup these options, you can access [http://dev.sgmarketplace.com](http://dev.sgmarketplace.com).
 
