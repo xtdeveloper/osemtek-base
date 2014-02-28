@@ -14,7 +14,7 @@ a `git submodule update --init` and it'll download and initialize the submodules
 
 ## Building Dev Environment
 
-You will need to have [VirtualBox](https://www.virtualbox.org/) and [Vagrant](http://vagrantup.com) 
+You will need to have [VirtualBox](https://www.virtualbox.org/) and [Vagrant](http://vagrantup.com)
 installed on your machine before continuing.  The latest versions will work fine.
 
 ### Install the Vagrant plugin(s)
@@ -40,8 +40,18 @@ $ cd vagrant
 $ vagrant up
 ```
 
-This will build your environment. It will take several minutes. This VagrantFile only contains a single server
-at the moment, which is named `marketplace_web`.  It uses local IP 192.168.33.20.
+This will build your environment. It will take several minutes. This VagrantFile contains the following servers:
+
+Vagrant Name:  `marketplace_web`
+IP Address:  192.168.33.20
+Contents:  Ubuntu OS, nginx webserver (port 80), MySQL, MongoDB
+
+Vagrnat Name:  `marketplace_search`
+IP Address:  192.168.33.21
+Contents:  Ubuntu OS, ElasticSearch 1.0.1 (port 9200)
+
+Each of these boxes can be brought up and down individually by specifying the name.  EX:  `vagrant up marketplace_web`
+
 
 ## Editing hosts file
 
@@ -73,18 +83,47 @@ $ cd /usr/share/nginx/www/sites/sgmarketplace.com
 $ composer install
 ```
 
-_You may be asked for your **github** username and password during composer installation.  Please supply them (this is a github limit to prevent spamming clone)._
+_You may be asked for your **github** username and password during composer installation.  Please supply them (this is a
+github limit to prevent spamming clone).  **This should be fixed with the current composer.json file**_
 
 Composer will download all the packages and require you to setup some configuration
 options.  Once you setup these options, you can access [http://dev.sgmarketplace.com](http://dev.sgmarketplace.com).
 
-### Default MySQL Options
+### Connecting to MySQL
+
+During installation of Symfony, you will be asked to enter in credentials for MySQL.  Here are your defaults:
+
 * Driver: pdo_mysql
 * Host: 127.0.0.1
 * Port: 3306
 * User: root
 * Password: [empty]
 * DB Name: marketplace
+
+Once configured, you may want to connect to MySQL on your local box via a third party tool.  For OSX, we recommend using
+[Sequel Pro](http://www.sequelpro.com/).  For Windows, we recommend using [MySQL Workbench](http://www.mysql.com/products/workbench/).
+To connect to the box, you will need to conenct via SSH to the machine.  Here are your defaults:
+
+SSH Host:  192.168.33.20
+SSH User:  vagrant
+SSH Key: ~/.vagrant.d/insecure_private_key for OSX or %HOMEPATH%\.vagrant.d\insecure_private_key for Windows
+
+
+### Connecting to MongoDB
+
+[MongoDB](http://www.mongodb.org/) is running on port 27017 on the `marketplace_web` server at IP 192.168.33.20.  No
+collections have been created by default.  There is no authentication required to connect to MongoDB currently.  If you
+would like to connect and browse collections, you can use [Robomongo](http://robomongo.org/) for OSX, or
+[MongoVUE](http://www.mongovue.com/) for Windows.
+
+### Connecting to Elasticsearch
+
+[Elasticsearch](http://www.elasticsearch.org/) is running on port 9200 of the `marketplace_search` server at IP 192.168.33.21.  By default, there are no
+mappings created.  We have installed a few plugins for your use that you can access via your web browser.
+
+[kopf](https://github.com/lmenezes/elasticsearch-kopf) - http://192.168.33.21:9200/_plugin/kopf
+[BigDesk](http://bigdesk.org/) - http://192.168.33.21:9200/_plugin/bigdesk
+
 
 ### Default Mailer Options
 Use all the default options
