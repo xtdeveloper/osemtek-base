@@ -27,4 +27,24 @@ Vagrant.configure("2") do |config|
       puppet.options = "--verbose --debug"
     end
   end
+
+  # Marketplace Development Elasticsearch Server
+    config.vm.define :marketplace_search do |search_config|
+      search_config.vm.box = "marketplace_search"
+      search_config.vm.network :forwarded_port, guest: 9200, host: 9200
+
+      search_config.vm.provider :virtualbox do |vb|
+        vb.customize ["modifyvm", :id, "--memory", "1024"]
+      end
+
+      search_config.vm.synced_folder "./../", "/usr/local/sg/marketplace", type: "nfs"
+      search_config.vm.network :private_network, ip: "192.168.33.21"
+
+      search_config.vm.provision :puppet do |puppet|
+        puppet.manifests_path = "manifests"
+        puppet.module_path = "modules"
+        puppet.manifest_file  = "marketplace_search.pp"
+        puppet.options = "--verbose --debug"
+      end
+    end
 end

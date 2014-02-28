@@ -301,3 +301,24 @@ mysql::augeas {
    'mysqld/bind-address':
       value  => '0.0.0.0';
 }
+
+# Mongo Install
+exec { 'mongo-key':
+  command => 'sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10'
+}->
+exec { 'mongo-source':
+  command => 'echo \'deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen\' | sudo tee /etc/apt/sources.list.d/mongodb.list'
+}->
+exec { 'mongo-aptget-update':
+  command => 'sudo apt-get update'
+}->
+exec { 'mongo-install':
+  command => 'sudo apt-get install mongodb-10gen'
+}
+
+exec { 'pecl-mongo-install':
+    command => 'pecl install mongo',
+    unless => "pecl info mongo",
+    notify => [Package['php5-fpm']],
+    require => Package['php-pear'],
+}

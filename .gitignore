@@ -12,4 +12,5 @@
 /composer.lock
 /nbproject/
 /nbproject/private/
+/.idea/
 .DS_Store
