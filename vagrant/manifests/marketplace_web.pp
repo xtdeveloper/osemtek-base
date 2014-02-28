@@ -220,7 +220,8 @@ package { "php5-xdebug" :
 }
 
 exec { 'setup-xdebug-config':
-    command => 'cat <<EOF >> /etc/php5/conf.d/20-xdebug.ini
+    command => 'cat <<EOF >>
+                /etc/php5/conf.d/20-xdebug.ini
                 xdebug.remote_enable = 1
                 xdebug.remote_connect_back = 1
                 xdebug.remote_host=192.168.33.20
@@ -230,7 +231,8 @@ exec { 'setup-xdebug-config':
                 xdebug.remote_handler=dbgp
                 xdebug.remote_log="/tmp/xdebug.log"
                 xdebug.profiler_enable=false
-                xdebug.profiler_output_dir="/tmp"',
+                xdebug.profiler_output_dir="/tmp"
+                ',
     require => [Package['php5-xdebug']],
     notify => Service['nginx']
 }
